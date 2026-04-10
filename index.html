@@ -1,1 +1,526 @@
-Hello World
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WallWatch — pfSense Firewall Manager</title>
+  <meta name="description" content="WallWatch is a professional mobile app for administering pfSense firewalls. Real-time traffic, firewall rules, VPN, DHCP, DNS and more — right from your phone." />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0A0E1A;
+      --bg2:       #111827;
+      --bg3:       #1C2333;
+      --border:    #1F2D3D;
+      --blue:      #00BCF2;
+      --teal:      #00D4AA;
+      --green:     #4CD964;
+      --orange:    #FF9500;
+      --red:       #FF3B30;
+      --text:      #F9FAFB;
+      --muted:     #6B7280;
+      --muted2:    #9CA3AF;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; height: 60px;
+      background: rgba(10,14,26,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 18px; font-weight: 800; color: var(--text); text-decoration: none;
+    }
+    .nav-logo-dot {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: linear-gradient(135deg, var(--blue), var(--teal));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+    }
+    .nav-links { display: flex; gap: 28px; }
+    .nav-links a {
+      color: var(--muted2); text-decoration: none; font-size: 14px; font-weight: 500;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta {
+      background: var(--blue); color: #000; font-size: 13px; font-weight: 700;
+      padding: 8px 18px; border-radius: 8px; text-decoration: none;
+      transition: opacity .2s;
+    }
+    .nav-cta:hover { opacity: .85; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 100px 24px 60px;
+      position: relative; overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 40%, rgba(0,188,242,.08) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 40% at 80% 20%, rgba(0,212,170,.06) 0%, transparent 60%);
+    }
+    .hero-inner {
+      position: relative; z-index: 1;
+      display: flex; align-items: center; gap: 64px;
+      max-width: 1100px; width: 100%;
+    }
+    .hero-text { flex: 1; }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(0,188,242,.12); border: 1px solid rgba(0,188,242,.3);
+      border-radius: 20px; padding: 5px 14px; margin-bottom: 24px;
+      font-size: 12px; font-weight: 600; color: var(--blue); letter-spacing: .5px;
+      text-transform: uppercase;
+    }
+    .hero-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--blue); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+    h1 {
+      font-size: clamp(38px, 6vw, 64px);
+      font-weight: 900; line-height: 1.08; letter-spacing: -1.5px;
+      margin-bottom: 20px;
+    }
+    h1 span { color: var(--blue); }
+    .hero-sub {
+      font-size: clamp(16px, 2vw, 19px); color: var(--muted2);
+      max-width: 480px; margin-bottom: 36px; line-height: 1.7;
+    }
+    .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--blue); color: #000;
+      font-size: 15px; font-weight: 700; padding: 14px 28px;
+      border-radius: 12px; text-decoration: none; transition: opacity .2s;
+    }
+    .btn-primary:hover { opacity: .85; }
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--bg3); color: var(--text); border: 1px solid var(--border);
+      font-size: 15px; font-weight: 600; padding: 14px 28px;
+      border-radius: 12px; text-decoration: none; transition: background .2s;
+    }
+    .btn-secondary:hover { background: #243046; }
+
+    /* hero image */
+    .hero-image {
+      flex-shrink: 0; width: 340px; height: 340px;
+      border-radius: 50%; overflow: hidden;
+      border: 2px solid rgba(0,188,242,.25);
+      box-shadow:
+        0 0 60px rgba(0,188,242,.15),
+        0 0 120px rgba(0,188,242,.07),
+        inset 0 0 40px rgba(0,0,0,.6);
+      position: relative;
+    }
+    .hero-image img { width: 100%; height: 100%; object-fit: cover; filter: saturate(0.8) contrast(1.1); }
+    .hero-image::after {
+      content: '';
+      position: absolute; inset: 0; border-radius: 50%;
+      background: radial-gradient(circle at 50% 50%, transparent 55%, rgba(10,14,26,.8) 100%);
+    }
+
+    /* ── STATS BAR ── */
+    .stats {
+      background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+      padding: 32px 24px;
+    }
+    .stats-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+      text-align: center;
+    }
+    .stat-num { font-size: 36px; font-weight: 900; color: var(--blue); letter-spacing: -1px; }
+    .stat-label { font-size: 13px; color: var(--muted); margin-top: 4px; font-weight: 500; }
+
+    /* ── FEATURES ── */
+    section { padding: 90px 24px; }
+    .section-inner { max-width: 1100px; margin: 0 auto; }
+    .section-label {
+      font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--blue); margin-bottom: 12px;
+    }
+    h2 {
+      font-size: clamp(28px, 4vw, 42px); font-weight: 900;
+      letter-spacing: -1px; margin-bottom: 16px; line-height: 1.15;
+    }
+    .section-sub { font-size: 17px; color: var(--muted2); max-width: 520px; margin-bottom: 56px; }
+
+    .features-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+    }
+    .feature-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 14px; padding: 24px;
+      transition: border-color .25s, transform .25s;
+    }
+    .feature-card:hover { border-color: rgba(0,188,242,.4); transform: translateY(-3px); }
+    .feature-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; margin-bottom: 14px;
+    }
+    .feature-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+    .feature-card p { font-size: 13px; color: var(--muted2); line-height: 1.6; }
+
+    /* ── CAPABILITIES LIST ── */
+    .caps { background: var(--bg2); }
+    .caps-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 48px; align-items: start; }
+    .caps-list { list-style: none; display: flex; flex-direction: column; gap: 16px; }
+    .caps-list li {
+      display: flex; align-items: flex-start; gap: 14px;
+      font-size: 15px; line-height: 1.5;
+    }
+    .cap-icon {
+      flex-shrink: 0; width: 32px; height: 32px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; font-size: 15px;
+      margin-top: 2px;
+    }
+    .cap-title { font-weight: 700; color: var(--text); }
+    .cap-desc { font-size: 13px; color: var(--muted2); margin-top: 2px; }
+
+    /* API badge grid */
+    .api-grid {
+      display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px;
+    }
+    .api-badge {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 8px; padding: 6px 12px;
+      font-size: 12px; font-weight: 600; font-family: 'Courier New', monospace;
+      color: var(--teal);
+    }
+
+    /* ── DOWNLOAD ── */
+    .download-box {
+      background: linear-gradient(135deg, rgba(0,188,242,.08), rgba(0,212,170,.06));
+      border: 1px solid rgba(0,188,242,.2);
+      border-radius: 20px; padding: 56px; text-align: center;
+    }
+    .download-box h2 { margin-bottom: 12px; }
+    .download-box p { color: var(--muted2); font-size: 16px; max-width: 480px; margin: 0 auto 36px; }
+    .platform-badges { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 28px; }
+    .platform-badge {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 12px; padding: 12px 22px;
+      font-size: 14px; font-weight: 600; color: var(--text);
+      text-decoration: none; transition: border-color .2s;
+    }
+    .platform-badge:hover { border-color: var(--blue); }
+    .platform-badge .badge-icon { font-size: 22px; }
+    .download-note { font-size: 12px; color: var(--muted); }
+    .download-note a { color: var(--blue); text-decoration: none; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border); padding: 36px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 16px;
+    }
+    footer p { font-size: 13px; color: var(--muted); }
+    footer a { color: var(--muted2); text-decoration: none; font-size: 13px; }
+    footer a:hover { color: var(--text); }
+    .footer-links { display: flex; gap: 20px; }
+    .pfsense-note {
+      font-size: 11px; color: var(--muted); max-width: 1100px; margin: 0 auto;
+      padding: 0 24px 24px; text-align: center; line-height: 1.7;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .hero-inner { flex-direction: column; text-align: center; gap: 40px; }
+      .hero-sub { margin-left: auto; margin-right: auto; }
+      .hero-actions { justify-content: center; }
+      .hero-image { width: 240px; height: 240px; order: -1; }
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+      .caps-grid { grid-template-columns: 1fr; }
+      .stats-inner { grid-template-columns: repeat(2, 1fr); }
+      .nav-links { display: none; }
+    }
+    @media (max-width: 600px) {
+      .features-grid { grid-template-columns: 1fr; }
+      .download-box { padding: 36px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">
+    <div class="nav-logo-dot">👁</div>
+    WallWatch
+  </a>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#capabilities">Capabilities</a>
+    <a href="#download">Download</a>
+  </div>
+  <a class="nav-cta" href="#download">Get the App</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-badge">
+        <div class="hero-badge-dot"></div>
+        pfSense REST API v2
+      </div>
+      <h1>Your firewall,<br /><span>in your pocket.</span></h1>
+      <p class="hero-sub">
+        WallWatch is a professional mobile app for administering pfSense firewalls —
+        real-time traffic graphs, firewall rules, VPN, DHCP, DNS and much more.
+      </p>
+      <div class="hero-actions">
+        <a class="btn-primary" href="#download">⬇ Download APK</a>
+        <a class="btn-secondary" href="https://pfrest.org/api-docs/" target="_blank" rel="noopener">API Docs ↗</a>
+      </div>
+    </div>
+    <div class="hero-image">
+      <img src="a.jpeg" alt="WallWatch — always watching" />
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stats-inner">
+    <div>
+      <div class="stat-num">44</div>
+      <div class="stat-label">Feature Phases</div>
+    </div>
+    <div>
+      <div class="stat-num">100+</div>
+      <div class="stat-label">API Endpoints</div>
+    </div>
+    <div>
+      <div class="stat-num">2</div>
+      <div class="stat-label">Platforms (Android &amp; iOS)</div>
+    </div>
+    <div>
+      <div class="stat-num">v2</div>
+      <div class="stat-label">pfSense REST API</div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="section-inner">
+    <div class="section-label">Why WallWatch</div>
+    <h2>Everything your firewall<br />deserves on mobile</h2>
+    <p class="section-sub">Built from the ground up for pfSense REST API v2 — not a web wrapper, a real native app.</p>
+
+    <div class="features-grid">
+
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(0,188,242,.12)">📊</div>
+        <h3>Live Traffic Graphs</h3>
+        <p>Per-interface inbound/outbound rate graphs updated every 2 seconds. Bytes, errors, collisions — all live.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(255,149,0,.12)">🛡</div>
+        <h3>Firewall Rules</h3>
+        <p>Full CRUD for firewall rules with protocol, port, source/destination, action and logging control.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(76,217,100,.12)">🔒</div>
+        <h3>VPN Management</h3>
+        <p>OpenVPN clients &amp; servers, WireGuard tunnels &amp; peers, IPsec phase 1/2 with encryption proposals.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(0,212,170,.12)">🌐</div>
+        <h3>DNS &amp; DHCP</h3>
+        <p>DNS Resolver, DNS Forwarder, DHCP leases with static mappings, custom options and relay.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(0,188,242,.12)">🔧</div>
+        <h3>Interface Control</h3>
+        <p>VLANs, bridges, LAGG, GRE tunnels and interface groups — with one-tap Apply Changes to activate on pfSense.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(255,59,48,.12)">🩺</div>
+        <h3>Diagnostics</h3>
+        <p>Ping, traceroute, packet capture, DNS lookup, ARP table, NDP table, PF Tables — all from your phone.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(255,149,0,.12)">📜</div>
+        <h3>Certificates &amp; CA</h3>
+        <p>Generate certificates &amp; CAs, create CSRs, sign them, export PKCS12 bundles — full PKI workflow.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(76,217,100,.12)">⚙️</div>
+        <h3>System Management</h3>
+        <p>NTP, email notifications, tunables, service watchdog, user management, HAProxy load balancer.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(0,212,170,.12)">🔄</div>
+        <h3>OTA Updates</h3>
+        <p>New features ship silently via Expo EAS without requiring a reinstall. Always up to date, automatically.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CAPABILITIES -->
+<section id="capabilities" class="caps">
+  <div class="section-inner">
+    <div class="section-label">Full Coverage</div>
+    <h2>Every corner of pfSense,<br />in one app</h2>
+    <p class="section-sub">WallWatch wraps the entire pfSense REST API v2 surface — no feature left behind.</p>
+
+    <div class="caps-grid">
+      <ul class="caps-list">
+
+        <li>
+          <div class="cap-icon" style="background:rgba(0,188,242,.12)">📡</div>
+          <div>
+            <div class="cap-title">Routing &amp; Gateways</div>
+            <div class="cap-desc">Static routes, gateway groups, priority policies, dynamic routing awareness.</div>
+          </div>
+        </li>
+        <li>
+          <div class="cap-icon" style="background:rgba(255,149,0,.12)">🔐</div>
+          <div>
+            <div class="cap-title">Authentication &amp; Users</div>
+            <div class="cap-desc">Local users, API key management, groups, privileges — full RBAC.</div>
+          </div>
+        </li>
+        <li>
+          <div class="cap-icon" style="background:rgba(76,217,100,.12)">📦</div>
+          <div>
+            <div class="cap-title">NAT Rules</div>
+            <div class="cap-desc">Outbound NAT, port forwards, 1:1 NAT with full create/edit/delete.</div>
+          </div>
+        </li>
+        <li>
+          <div class="cap-icon" style="background:rgba(0,212,170,.12)">🗄</div>
+          <div>
+            <div class="cap-title">Aliases</div>
+            <div class="cap-desc">IP, port, URL and nested alias management with type-specific entry editors.</div>
+          </div>
+        </li>
+        <li>
+          <div class="cap-icon" style="background:rgba(255,59,48,.12)">📊</div>
+          <div>
+            <div class="cap-title">Status &amp; Monitoring</div>
+            <div class="cap-desc">System dashboard, gateway status, service status with start/stop/restart actions.</div>
+          </div>
+        </li>
+
+      </ul>
+
+      <div>
+        <p style="font-size:14px; color:var(--muted2); margin-bottom:16px; font-weight:600;">REST API ENDPOINTS COVERED</p>
+        <div class="api-grid">
+          <span class="api-badge">/interfaces</span>
+          <span class="api-badge">/interface/vlans</span>
+          <span class="api-badge">/interface/apply</span>
+          <span class="api-badge">/firewall/rules</span>
+          <span class="api-badge">/firewall/aliases</span>
+          <span class="api-badge">/firewall/nat/*</span>
+          <span class="api-badge">/vpn/openvpn/*</span>
+          <span class="api-badge">/vpn/wireguard/*</span>
+          <span class="api-badge">/vpn/ipsec/*</span>
+          <span class="api-badge">/services/dhcp/*</span>
+          <span class="api-badge">/services/dns/*</span>
+          <span class="api-badge">/services/ntpd</span>
+          <span class="api-badge">/services/haproxy</span>
+          <span class="api-badge">/routing/gateways</span>
+          <span class="api-badge">/routing/routes</span>
+          <span class="api-badge">/system/certificates</span>
+          <span class="api-badge">/system/ca</span>
+          <span class="api-badge">/system/tunables</span>
+          <span class="api-badge">/diagnostics/ping</span>
+          <span class="api-badge">/diagnostics/tables</span>
+          <span class="api-badge">/status/interfaces</span>
+          <span class="api-badge">…and more</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DOWNLOAD -->
+<section id="download">
+  <div class="section-inner">
+    <div class="download-box">
+      <div class="section-label" style="margin-bottom:16px">Free &amp; Open Source</div>
+      <h2>Start watching your wall</h2>
+      <p>Install WallWatch on your Android or iOS device and connect to any pfSense firewall in seconds.</p>
+
+      <div class="platform-badges">
+        <a class="platform-badge" href="https://expo.dev/accounts/pfs_pfs_pfs/projects/pfsense-soc/builds" target="_blank" rel="noopener">
+          <span class="badge-icon">🤖</span>
+          <span>
+            <div style="font-size:11px;color:var(--muted);font-weight:500">Download for</div>
+            Android APK
+          </span>
+        </a>
+        <a class="platform-badge" href="https://expo.dev/accounts/pfs_pfs_pfs/projects/pfsense-soc/builds" target="_blank" rel="noopener">
+          <span class="badge-icon">🍎</span>
+          <span>
+            <div style="font-size:11px;color:var(--muted);font-weight:500">Download for</div>
+            iOS (TestFlight)
+          </span>
+        </a>
+        <a class="platform-badge" href="https://github.com/Csurlee/wallwatch" target="_blank" rel="noopener">
+          <span class="badge-icon">⌨️</span>
+          <span>
+            <div style="font-size:11px;color:var(--muted);font-weight:500">Source code on</div>
+            GitHub
+          </span>
+        </a>
+      </div>
+
+      <p class="download-note">
+        Requires pfSense CE with <a href="https://pfrest.org" target="_blank" rel="noopener">pfSense REST API</a> installed.
+        Built with <a href="https://expo.dev" target="_blank" rel="noopener">Expo</a> &amp; React Native.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 WallWatch. Built for pfSense administrators.</p>
+  <div class="footer-links">
+    <a href="https://github.com/Csurlee/wallwatch" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://pfrest.org/api-docs/" target="_blank" rel="noopener">API Docs</a>
+    <a href="https://expo.dev/accounts/pfs_pfs_pfs/projects/pfsense-soc" target="_blank" rel="noopener">EAS Builds</a>
+  </div>
+</footer>
+<p class="pfsense-note">
+  pfSense® is a registered trademark of Rubicon Communications, LLC (Netgate). WallWatch is an independent project and is not affiliated with, endorsed by, or sponsored by Netgate.
+</p>
+
+</body>
+</html>
