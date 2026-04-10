@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — WallWatch</title>
+  <meta name="description" content="WallWatch Privacy Policy — how the app handles your data." />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0A0E1A; --bg2: #111827; --bg3: #1C2333; --border: #1F2D3D;
+      --blue: #00BCF2; --teal: #00D4AA; --text: #F9FAFB; --muted: #6B7280; --muted2: #9CA3AF;
+    }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.7; }
+
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; height: 60px;
+      background: rgba(10,14,26,.95); border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 800; color: var(--text); text-decoration: none; }
+    .nav-logo-dot { width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, var(--blue), var(--teal)); display: flex; align-items: center; justify-content: center; font-size: 14px; }
+    .nav-back { color: var(--muted2); text-decoration: none; font-size: 14px; font-weight: 500; }
+    .nav-back:hover { color: var(--text); }
+
+    .page { max-width: 760px; margin: 0 auto; padding: 64px 24px 80px; }
+
+    .page-label { font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--blue); margin-bottom: 12px; }
+    h1 { font-size: 40px; font-weight: 900; letter-spacing: -1px; margin-bottom: 8px; }
+    .updated { font-size: 13px; color: var(--muted); margin-bottom: 48px; }
+
+    h2 { font-size: 18px; font-weight: 700; margin: 40px 0 12px; color: var(--text); }
+    p { font-size: 15px; color: var(--muted2); margin-bottom: 16px; }
+    ul { padding-left: 20px; margin-bottom: 16px; }
+    li { font-size: 15px; color: var(--muted2); margin-bottom: 8px; }
+
+    .highlight {
+      background: var(--bg2); border: 1px solid var(--border); border-left: 3px solid var(--teal);
+      border-radius: 10px; padding: 20px 24px; margin: 32px 0;
+    }
+    .highlight p { color: var(--text); margin: 0; font-weight: 500; }
+
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    footer { border-top: 1px solid var(--border); padding: 28px 24px; text-align: center; }
+    footer p { font-size: 13px; color: var(--muted); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <div class="nav-logo-dot">👁</div>
+    WallWatch
+  </a>
+  <a class="nav-back" href="index.html">← Back to home</a>
+</nav>
+
+<div class="page">
+  <div class="page-label">Legal</div>
+  <h1>Privacy Policy</h1>
+  <p class="updated">Last updated: April 10, 2026</p>
+
+  <div class="highlight">
+    <p>WallWatch does not collect, transmit, or share any personal data with third parties. All communication happens directly between your device and your own pfSense firewall.</p>
+  </div>
+
+  <h2>1. What WallWatch does</h2>
+  <p>WallWatch is a mobile application that allows you to administer your own self-hosted pfSense firewall via the pfSense REST API v2. It connects exclusively to the firewall address you configure in the app settings.</p>
+
+  <h2>2. Data we collect</h2>
+  <p>We collect <strong style="color:var(--text)">no data</strong>. Specifically:</p>
+  <ul>
+    <li>No analytics or usage tracking</li>
+    <li>No crash reporting sent to any external server</li>
+    <li>No advertising identifiers</li>
+    <li>No location data</li>
+    <li>No contact information</li>
+    <li>No device identifiers stored or transmitted</li>
+  </ul>
+
+  <h2>3. Data stored on your device</h2>
+  <p>WallWatch stores the following information <strong style="color:var(--text)">locally on your device only</strong>:</p>
+  <ul>
+    <li><strong style="color:var(--text)">Firewall address &amp; port</strong> — stored in device AsyncStorage</li>
+    <li><strong style="color:var(--text)">API key or password</strong> — stored in the device's secure encrypted keystore (Android Keystore / iOS Secure Enclave) via Expo SecureStore. Never written to disk in plain text.</li>
+    <li><strong style="color:var(--text)">App preferences</strong> — refresh interval, theme, debug mode — stored in device AsyncStorage</li>
+  </ul>
+  <p>This data never leaves your device except as authentication headers sent directly to your own firewall.</p>
+
+  <h2>4. Network communication</h2>
+  <p>The app communicates exclusively with the pfSense firewall IP address or hostname you provide. No requests are made to any WallWatch server, cloud service, or third party. All API calls go directly from your device to your firewall over your local network or VPN.</p>
+
+  <h2>5. Third-party services</h2>
+  <p>WallWatch is built with <a href="https://expo.dev" target="_blank" rel="noopener">Expo</a> and uses Expo's OTA update service to deliver app updates. When the app starts, it may check Expo's servers for a JS bundle update. No personal data is sent during this check — only the app's runtime version identifier.</p>
+
+  <h2>6. Children's privacy</h2>
+  <p>WallWatch is a professional network administration tool not directed at children under 13. We do not knowingly collect any information from children.</p>
+
+  <h2>7. Changes to this policy</h2>
+  <p>If this policy changes, the updated version will be published at this URL with a new "Last updated" date.</p>
+
+  <h2>8. Contact</h2>
+  <p>Questions about this privacy policy? Open an issue on <a href="https://github.com/Csurlee/wallwatch" target="_blank" rel="noopener">GitHub</a>.</p>
+</div>
+
+<footer>
+  <p>© 2026 WallWatch — <a href="index.html">Home</a> · pfSense® is a registered trademark of Rubicon Communications, LLC (Netgate). WallWatch is not affiliated with Netgate.</p>
+</footer>
+
+</body>
+</html>
